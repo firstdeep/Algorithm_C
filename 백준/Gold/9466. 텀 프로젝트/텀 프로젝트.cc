@@ -27,7 +27,6 @@ void DFS(int n) {
 	if (!vis[next])
 		DFS(next);
 	else if (!done[next]) {
-		cout << next;
 		// 사이클 검사 -> 방문 했던 점들 중 끝나지는 않았다면 무조건 사이클!
 		for (int i = next; i != n; i = arr[i]) 
 			//6이 가르키는 것부터 시작해서 6이 아닐때까지 i를계속 돌린다음 
