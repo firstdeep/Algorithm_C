@@ -6,6 +6,7 @@ using namespace std;
 using ll = long long;
 
 ll seg[1024 * 1024 * 2]; // 배열 크기: 원래는 N값을 받으면 2^k>=N 이후 2^(K+1) 만큼 배열 잡기
+// vector로 설정해도 된다. 
 int si = 1;
 
 // Indexed 트리는 bottom up 방식?
@@ -60,3 +61,4 @@ int main() {
 }
 
 #endif
+
