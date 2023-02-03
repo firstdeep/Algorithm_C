@@ -6,9 +6,9 @@
 #include<iostream>
 using namespace std;
 int N, M,MAXK;
-bool visit[50001];
-vector<int> ad[100001];
-int parent[100001][21], depth[100001];
+bool visit[50002];
+vector<int> ad[50002];
+int parent[50002][21], depth[50002];
 
 
 void DFS(int curr, int d) {
