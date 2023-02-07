@@ -1,62 +1,63 @@
-#if 1 
-#include <cstdio>
+#include <iostream>
 #include <algorithm>
 #include <vector>
-#define MAX_N 40000
+
 using namespace std;
-int n, m, visited[MAX_N + 1], dph[MAX_N + 1], par[MAX_N + 1][20], dist[MAX_N + 1], x, y, z;
-vector<vector<pair<int, int>>>vt;
-void dfs(int v, int dh, int dis) {
-	visited[v] = true;
-	dph[v] = dh;
-	dist[v] = dis;
-	for (auto u : vt[v]) {
-		if (visited[u.first])
-			continue;
-		dfs(u.first, dh + 1, dis + u.second);
-		par[u.first][0] = v;
-	}
-}
-void f() {
-	for (int j = 1; j < 20; j++) {
-		for (int i = 1; i <= n; i++)
-			par[i][j] = par[par[i][j - 1]][j - 1];
-	}
-}
-int lca(int x, int y) {
-	if (dph[x] > dph[y])
-		swap(x, y);
-	for (int i = 19; i >= 0; i--) {
-		if (dph[y] - dph[x] >= (1 << i))
-			y = par[y][i];
-	}
-	if (x == y)return x;
-	for (int i = 19; i >= 0; i--) {
-		if (par[x][i] != par[y][i]) {
-			x = par[x][i];
-			y = par[y][i];
-		}
-	}
-	return par[x][0];
-}
-int main() {
-	// freopen("input.txt", "r", stdin);
-	scanf("%d", &n);
-	vt.resize(n + 1);
-	for (int i = 0; i < n - 1; i++) {
-		scanf("%d%d%d", &x, &y, &z);
-		vt[x].push_back({ y,z });
-		vt[y].push_back({ x,z });
-	}
-	dfs(1, 0, 0);
-	f();
-	scanf("%d", &m);
-	while (m--) {
-		scanf("%d%d", &x, &y);
-		int qlca = lca(x, y);
-		printf("%d\n", dist[x] + dist[y] - 2 * dist[qlca]);
-	}
-	return 0;
+
+const int N = 4e4 + 4;
+vector<pair<int, int>> v[N];
+int dp[22][N], cost[N], lev[N];
+bool visited[N];
+
+void dfs(int cur, int prv) {
+    visited[cur] = true;
+    dp[0][cur] = prv;
+    lev[cur] = lev[prv] + 1;
+    for (auto [nxt, c] : v[cur]) {
+        if (!visited[nxt]) {
+            cost[nxt] = cost[cur] + c;
+            dfs(nxt, cur);
+        }
+    }
 }
 
-#endif
+int lca(int a, int b) {
+    if (lev[a] > lev[b]) swap(a, b);
+    for (int i = 20; i >= 0; i--) {
+        if (lev[b] - lev[a] >= (1 << i)) b = dp[i][b];
+    }
+    if (a == b) return a;
+
+    for (int i = 20; i >= 0; i--) { 
+        if (dp[i][a] != dp[i][b]) {
+            a = dp[i][a];
+            b = dp[i][b];
+        }
+    }
+    return dp[0][a];
+    // return 1;
+}
+
+int main() {
+    ios::sync_with_stdio(0); cin.tie(0);
+    int n; cin >> n;
+    for (int i = 0; i < n - 1; i++) {
+        int a, b, c; cin >> a >> b >> c;
+        v[a].push_back({b, c});
+        v[b].push_back({a, c});
+    }
+    dfs(1, 0);
+
+    for (int i = 1; i <= 20; i++)
+        for (int j = 1; j < N; j++)
+            dp[i][j] = dp[i - 1][dp[i - 1][j]];
+    
+    int q; cin >> q;
+    while (q--) {
+        int a, b; cin >> a >> b;
+        int _lca = lca(a, b);
+        // cout << _lca << endl;
+        int ret = cost[a] + cost[b] - 2 * cost[_lca];   
+        cout << ret << '\n';
+    }
+}
